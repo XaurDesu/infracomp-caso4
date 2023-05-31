@@ -35,6 +35,9 @@ Infraestructura Computacional - Universidad de los Andes\\
 %	CONTENTS
 %-------------------------------
 \section{Detalles del Problema.}
+
+\textbf{Nota: gran parte de los detalles son extraidos del entorno de contexto.}
+
 En este caso se estudiarán las necesidades de infraestructura de Finandes, una empresa ficticia que se dedica a la
 captación y colocación de recursos financieros.
 
@@ -93,9 +96,7 @@ de datos de la entidad.
 
 El proceso de captación lo hacen las sucursales a nivel nacional. El manejo relacionado con préstamos es intenso en
 procesamiento pues se requiere hacer conciliaciones tripartitas entre los recursos disponibles, el registro de
-transacciones del usuario y las captaciones y colocaciones de la entidad. Estos procesos implican varias
-
-verificaciones generan archivos con las inconsistencias encontradas. También se requiere el cobro de intereses no
+transacciones del usuario y las captaciones y colocaciones de la entidad. Estos procesos implican varias verificaciones generan archivos con las inconsistencias encontradas. También se requiere el cobro de intereses no
 realizados. Este proceso implica el control del debido pago de los clientes.
 Los procesos de analítica encadenan diferentes aplicaciones y bases de datos mediante un flujo de trabajo de estilo
 BPM, así como un análisis de las redes sociales de los clientes.
@@ -144,7 +145,6 @@ Existen también otros lineamientos:
     terceros contratados.
 \end{itemize}
 
-
 \subsection{Infraestructura existente}
 Dado el enunciado dado arriba, sabemos que tenemos, bajo control completo de la compañía:
 \begin{itemize}
@@ -159,9 +159,10 @@ Dado el enunciado dado arriba, sabemos que tenemos, bajo control completo de la 
 Y, tenemos de forma subcontratada:
 
 \begin{itemize}
-    \item Un 
+    \item Un proceso de subcontratación.
     \item los servicios de conexión tienen software propietario que no controlamos como parte de su servicio. 
-    se asumirá como una caja negra este producto dentro de nuestro diseño. 
+    se asumirá como una caja negra este producto dentro de nuestro diseño.
+    \item un centro de datos alterno. 
 \end{itemize}
 
 Fuera de esto, se va a asumir que:
@@ -171,12 +172,74 @@ Fuera de esto, se va a asumir que:
     distribución de la carga computacional requerida para su funcionamiento lo que contribuye a los problemas de
     sobrecarga de los servidores de base de datos institucionales.
     \item La mayoría de los servidores tienen más de 4 años de uso (algunos tienen más de 10 años de uso). Hay
-    aproximadamente 37 servidores físicos en el centro de cómputo.
+    aproximadamente 39 servidores físicos en el centro de cómputo.
     \item En lo que se refiere a los servidores de apoyo a las bases de datos, que son actualmente dos, organizados en
     un clúster activo-pasivo, se ha determinado que están sobrecargados.
 \end{itemize}
 
+Estas reglas se pueden visualizar a partir de los siguientes diagramas:
+
+
+
 \section{Diseño de las soluciones.}
 
+\subsection{secciones a evaluar.}
+Hay 7 principales secciones que se evaluarán:
+\begin{itemize}
+    \item Afiliación: 100 transacciones al día que se procesan en la noche y que generan mucha carga de
+    entrada/salida en almacenamiento
+    \item Captación: estos ingresos de dinero, de los cuales hay unos 20,000 al día, se consolidan en la noche y
+    generan mucha carga en almacenamiento.
+    \item Préstamos: 4,000 operaciones diarias que se deben resolver en línea y que requieren alta capacidad de
+    cómputo
+    \item Analítica: se ejecutan unas 500 diarias, la mitad de las cuales son en línea y son grandes consumidoras de
+    procesamiento.
+    \item Nómina: Se procesan unas 20,000 a finales de mes con alto consumo de procesamiento y de operaciones
+    de entrada/salida
+    \item App y Web: se espera pasar de 2.000 a 10,000 operaciones diarias en los próximos meses. Son intensivas
+    en operaciones de entrada/salida
+\end{itemize}
+
+Para estos casos de uso, se establecen los siguientes requerimientos:
+
+\textbf{Afiliación:}
+\begin{itemize}
+    \item \textbf{Desempeño}
+    \item \textbf{Disponibilidad}
+    \item \textbf{Escalabilidad}
+    \item \textbf{Capacidad}
+\end{itemize}
+
+\textbf{Captación:}
+\begin{itemize}
+    \item \textbf{Desempeño}
+    \item \textbf{Disponibilidad}
+    \item \textbf{Escalabilidad}
+    \item \textbf{Capacidad}
+\end{itemize}
+
+\textbf{Analítica:}
+\begin{itemize}
+    \item \textbf{Desempeño}
+    \item \textbf{Disponibilidad}
+    \item \textbf{Escalabilidad}
+    \item \textbf{Capacidad}
+\end{itemize}
+
+\textbf{Nómina:}
+\begin{itemize}
+    \item \textbf{Desempeño}
+    \item \textbf{Disponibilidad}
+    \item \textbf{Escalabilidad}
+    \item \textbf{Capacidad}
+\end{itemize}
+
+\textbf{App y Web:}
+\begin{itemize}
+    \item \textbf{Desempeño}
+    \item \textbf{Disponibilidad}
+    \item \textbf{Escalabilidad}
+    \item \textbf{Capacidad}
+\end{itemize}
 %------------------------------------------------
 \end{document}
