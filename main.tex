@@ -35,8 +35,148 @@ Infraestructura Computacional - Universidad de los Andes\\
 %	CONTENTS
 %-------------------------------
 \section{Detalles del Problema.}
+En este caso se estudiarán las necesidades de infraestructura de Finandes, una empresa ficticia que se dedica a la
+captación y colocación de recursos financieros.
+
+Aunque desde muchos puntos de vista sería deseable poder definir una infraestructura completamente nueva, que
+responda a las necesidades de los diferentes procesos de la organización, es poco práctico hacer “borrón y cuenta
+nueva” de la infraestructura actual. Por esta razón se debe plantear una transición gradual, que tomará cierto
+tiempo, para ir de la infraestructura actual a la ideal. Teniendo en cuenta esto, en la presentación del caso se
+incluyen, tanto las características de las aplicaciones y datos que deben ser soportados, como las de la
+infraestructura actual, las cuales condicionan la definición de la nueva infraestructura.
+
+Finandes tiene 900.000 afiliados. Además, la empresa tiene 35 oficinas distribuidas en varios municipios del país.
+En todas ellas se prestan los mismos servicios y todas tienen acceso electrónico al centro de datos ubicado en
+Bogotá. Se estima que hay unos 50 funcionarios haciendo transacciones de recepción de documentos. Estas
+transacciones son dirigidas por un BPM que encadena los procesos de validación de datos e información hasta darle
+respuesta a la persona que solicita un trámite.
+
+El servicio que presta la entidad es un servicio de alta sensibilidad social por lo que requiere un nivel de continuidad
+alto; los servicios informáticos deben estar disponibles en las oficinas en las horas laborales (de lunes a viernes de
+9 am a 3 pm), y vía Internet los siete días de la semana entre 7 a.m. y 12 p.m. Además, se considera que el servicio
+al afiliado, el cual es una prioridad en este momento, depende totalmente de un buen funcionamiento de los
+sistemas de información, lo cual implica, no sólo que las aplicaciones deben estar disponibles, sino que el tiempo
+de respuesta desde cualquier oficina y desde Internet debe ser menor o igual a 3 segundos. Por la razón anterior,
+se ha determinado que las aplicaciones de apoyo a la atención al público estén siempre disponibles en el horario
+indicado (no se desea que en los sitios de atención se diga que no hay servicio porque no hay línea, como ocurre
+eventualmente en la actualidad)
+
+Por las razones mencionadas, se requiere un plan de continuidad para el caso de que haya un incidente mayor que
+impida que el centro de datos funcione adecuadamente.
+
+La información más importante que maneja la empresa tiene que ver con los recursos manejados tanto por
+personas jurídicas como naturales. En el caso de las empresas, Finandes se ocupa de sus pagos de nómina y las
+gestiones financieras propias de una empresa. En el caso de las personas, Finandes ofrece productos de inversión y
+préstamos personales.
+
+Los datos son de dos tipos: anteriores y posteriores a la reforma tributaria de este año. En cuanto al primer tipo de
+datos, Finandes debe gestionar la información de los recursos manejados por Finandes previo a la mencionada
+reforma, junto con las reglas de negocio implementadas para responder a la reglamentación correspondiente. En
+lo que concierne a la segunda tipología de datos Finandes debe gestionar la información de los recursos manejados
+junto con la reglamentación que los rige. Se va a requerir una nueva base de datos homogénea para los dos tipos
+de datos.
+
+Ante las dificultades que ha tenido con su operación, Finandes ha decidido privilegiar la subcontratación de servicios
+en la medida de lo posible, lo cual se aplica, entre otros, a aspectos que tengan que ver con las tecnologías de
+información y comunicaciones, así como con captura y digitación de datos. Así mismo, está migrando a
+transacciones sin papel haciendo que el usuario incremente el número y tipo de transacciones que realiza vía
+electrónica (app y web).
+
+La empresa tiene algún retraso tecnológico y se desea transformarla para que cuente con una infraestructura
+tecnológica moderna que le permita desempeñar cabalmente sus funciones. Para esto ha decidido renovar su
+infraestructura y el objetivo es que esto pueda ser hecho en el menor tiempo posible. Después de un análisis
+cuidadoso se ha establecido que esta debe continuar centralizada, con sede en Bogotá.
+
+El proceso de afiliación está subcontratado con una entidad externa y esta reporta periódica y electrónicamente la
+información correspondiente, para ser procesada en forma batch. Con base en ella se procede a actualizar las bases
+de datos de la entidad.
+
+El proceso de captación lo hacen las sucursales a nivel nacional. El manejo relacionado con préstamos es intenso en
+procesamiento pues se requiere hacer conciliaciones tripartitas entre los recursos disponibles, el registro de
+transacciones del usuario y las captaciones y colocaciones de la entidad. Estos procesos implican varias
+
+verificaciones generan archivos con las inconsistencias encontradas. También se requiere el cobro de intereses no
+realizados. Este proceso implica el control del debido pago de los clientes.
+Los procesos de analítica encadenan diferentes aplicaciones y bases de datos mediante un flujo de trabajo de estilo
+BPM, así como un análisis de las redes sociales de los clientes.
+
+La aplicación de nómina ofrece dos servicios: consultas diarias y consolidación a fin de mes. El primero necesita un
+tiempo de respuesta mínimo pues los empleados usan la consulta para atender en las oficinas de servicio al público.
+El segundo servicio se realiza a fin de mes, su procesamiento es tipo batch y puede durar varios días. Además, por
+su impacto una falla sería muy costosa. Este sistema debe tener un esquema de contingencia totalmente probado
+y certificado.
+
+El portal web y la app debe permitir un número creciente de operaciones tanto para personas jurídicas como
+naturales.
+
+Se calcula que en la empresa hay aproximadamente 15 bases de datos que ocupan en total 100 terabytes de
+espacio. Las bases de datos más importantes, las relacionadas con afiliados y empresas, son usadas por la mayoría
+de las aplicaciones. En particular, son usadas por dos aplicaciones, captación y nómina, las cuales deben tener una
+alta disponibilidad y un buen tiempo de respuesta. Además, como se dijo arriba, hay que tener mucho cuidado con
+las intensivas en procesamiento porque podrían generar problemas de contención.
+Las copias de respaldo (“backups”) deben permitir la operación de las aplicaciones misionales durante las horas
+hábiles.
+
+La continuidad de la operación está garantizada hoy con la contratación de un centro de datos alterno en otra
+ciudad, cuyas bases de datos deben estar sincronizadas con las de la entidad. Esto quiere decir que cualquier
+transacción que se haga en la entidad se debe reflejar también en el centro alterno. Este centro de datos es
+administrado por la entidad encargada de hacer las afiliaciones.
+Todas las sucursales tienen conexión al centro de datos central, el cual reside en Bogotá. De ellas, 12 están ubicadas
+en la ciudad de Bogotá. Se desea que el procesamiento se siga haciendo de forma centralizada, en Bogotá.
+Además de lo anterior, la entidad debe conectarse electrónicamente con 5 puntos ubicados en entidades externas
+(por ejemplo, la empresa que se encarga de las afiliaciones, el banco de la república y la superfinaciera). Hay una
+conexión especialmente importante que es la actualización en línea con el centro de datos alterno, el cual está
+ubicado en otra ciudad.
+
+\subsection{Principios tecnológicos}
+
+Dentro de los principios tecnológicos que se han definido en la empresa con respecto a la infraestructura están los
+siguientes: el procesamiento debe ser centralizado, se continuará con la subcontratación de las afiliaciones y el
+centro alterno, se seguirá trabajando con procedimientos almacenados, se trabajará con el ambiente de desarrollo
+de Java y con el ambiente de bases de datos Oracle. Puede que algunas de estos principios cambien en el mediano,
+pero no en el corto plazo.
+
+Existen también otros lineamientos:
+\begin{itemize}
+    \item Exigir que los terceros contratados dispongan de planes de contingencia y continuidad debidamente
+    documentados.
+    \item Implementar mecanismos de cifrado fuerte para el envío y recepción de información confidencial con los
+    terceros contratados.
+\end{itemize}
 
 
+\subsection{Infraestructura existente}
+Dado el enunciado dado arriba, sabemos que tenemos, bajo control completo de la compañía:
+\begin{itemize}
+    \item un BPM (Business Process Manager)
+    \item un portal web (sin especificaciones de frameworks o tecnologías)
+    \item una app movil (sin especificaciones de frameworks o tecnologías)
+    \item 37 servidores (solo nos centraremos en aquellos afectados por la estructura TO-BE)
+    \item 15 bases de datos con 100 TB de datos.
+    \item conexiones con el banco, la superfinanciera, y las aplicaciones para las aplicaciones.
+\end{itemize}
+
+Y, tenemos de forma subcontratada:
+
+\begin{itemize}
+    \item Un 
+    \item los servicios de conexión tienen software propietario que no controlamos como parte de su servicio. 
+    se asumirá como una caja negra este producto dentro de nuestro diseño. 
+\end{itemize}
+
+Fuera de esto, se va a asumir que:
+
+\begin{itemize}
+    \item La arquitectura de las aplicaciones, basada en procedimientos almacenados (“stored procedures”), dificulta la
+    distribución de la carga computacional requerida para su funcionamiento lo que contribuye a los problemas de
+    sobrecarga de los servidores de base de datos institucionales.
+    \item La mayoría de los servidores tienen más de 4 años de uso (algunos tienen más de 10 años de uso). Hay
+    aproximadamente 37 servidores físicos en el centro de cómputo.
+    \item En lo que se refiere a los servidores de apoyo a las bases de datos, que son actualmente dos, organizados en
+    un clúster activo-pasivo, se ha determinado que están sobrecargados.
+\end{itemize}
+
+\section{Diseño de las soluciones.}
 
 %------------------------------------------------
 \end{document}
