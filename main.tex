@@ -178,8 +178,10 @@ Fuera de esto, se va a asumir que:
 \end{itemize}
 
 Estas reglas se pueden visualizar a partir de los siguientes diagramas:
-
-
+\begin{center}
+    \textbf{Modelo de aplicaciones AS-IS}
+    \includegraphics[scale=0.72]{as-is.jpg}    
+\end{center}
 
 \section{Diseño de las soluciones.}
 
@@ -202,12 +204,20 @@ Hay 7 principales secciones que se evaluarán:
 
 Para estos casos de uso, se establecen los siguientes requerimientos:
 
+\textbf{General:}
+\begin{itemize}
+    \item En general
+\end{itemize} 
 \textbf{Afiliación:}
 \begin{itemize}
     \item \textbf{Desempeño}
     \item \textbf{Disponibilidad}
     \item \textbf{Escalabilidad}
     \item \textbf{Capacidad}
+    
+    La carga de entrada/salida es muy intensiva, por lo que la solución debe poder 
+
+
 \end{itemize}
 
 \textbf{Captación:}
@@ -215,7 +225,18 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
     \item \textbf{Desempeño}
     \item \textbf{Disponibilidad}
     \item \textbf{Escalabilidad}
+    
+    Dado que este servicio solamente se utiliza a finales de mes, solamente es necesario mantener
+    este servicio durante ese espacio de tiempo, por lo que debe poder escalarse la capacidad del 
+    servicio para acomodar la demanda, pero pueden quitarse dichos recursos en las ocasiones que 
+    no sean utilizados.
+
     \item \textbf{Capacidad}
+    
+    Esta es la aplicación que tiene el mayor número de peticiones en un periodo corto de
+    tiempo. Por lo tanto debe poderse procesar de forma eficiente esta cantidad de transacciones
+    al final de cada mes sin sobrepasar la barrera de sobrecarga.
+
 \end{itemize}
 
 \textbf{Analítica:}
@@ -242,7 +263,8 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
     
     Se espera lograr que la aplicación escale su capacidad de 
     2,000 a 10,000 solicitudes por día en los próximos meses. Esto
-    implica un aumento de 
+    implica un aumento permanente de la capacidad del sistema con respecto al
+    modelo AS-IS.
     
     \item \textbf{Capacidad}
 \end{itemize}
