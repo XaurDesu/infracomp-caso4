@@ -177,7 +177,7 @@ Fuera de esto, se va a asumir que:
     un clúster activo-pasivo, se ha determinado que están sobrecargados.
 \end{itemize}
 
-Estas reglas se pueden visualizar a partir de los siguientes diagramas:
+Estas reglas se pueden visualizar a partir del siguiente diagrama:
 \begin{center}
     \textbf{Modelo de aplicaciones AS-IS}
     \includegraphics[scale=0.72]{as-is.jpg}    
@@ -202,12 +202,16 @@ Hay 7 principales secciones que se evaluarán:
     en operaciones de entrada/salida
 \end{itemize}
 
+Para cada una de estas, se desarrollará una arquitectura diferente teniendo en cuenta sus requerimientos.
+
 Para estos casos de uso, se establecen los siguientes requerimientos:
 
 \textbf{General:}
 \begin{itemize}
-    \item En general
+    \item En general todo se espera poder mantener en una misma granja de servidores, sin el uso de multinube.
+    \item 
 \end{itemize} 
+
 \textbf{Afiliación:}
 \begin{itemize}
     \item \textbf{Desempeño}
@@ -252,13 +256,28 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
     \item \textbf{Desempeño}
     \item \textbf{Disponibilidad}
     \item \textbf{Escalabilidad}
+    
+
     \item \textbf{Capacidad}
+    
+
+
 \end{itemize}
 
 \textbf{App y Web:}
 \begin{itemize}
     \item \textbf{Desempeño}
+    
+    Gran parte del desempeño de esta aplicación esta fuera de nuestro control, cosas como la conexión del
+    cliente o la calidad de su conexión puede afectar el servicio. Sin embargo, debe poderse mantener un tiempo
+    de respuesta aceptable.
+
     \item \textbf{Disponibilidad}
+    
+    Dado que esta es nuestra principal conexión digital con los clientes, es importante que el programa
+    tenga una alta disponibilidad. los tiempos de respuesta deben minimizarse u ocultarse al individuo que 
+    use la aplicación
+
     \item \textbf{Escalabilidad} 
     
     Se espera lograr que la aplicación escale su capacidad de 
@@ -267,6 +286,10 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
     modelo AS-IS.
     
     \item \textbf{Capacidad}
+    
+    La capacidad de esta capacidad, aunque no es constante en práctica, se asumirá de forma
+    constante. Sin embargo, se asumirá para las pruebas la capacidad máxima
+
 \end{itemize}
 %------------------------------------------------
 \end{document}
