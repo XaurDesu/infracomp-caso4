@@ -129,6 +129,17 @@ Además de lo anterior, la entidad debe conectarse electrónicamente con 5 punto
 conexión especialmente importante que es la actualización en línea con el centro de datos alterno, el cual está
 ubicado en otra ciudad.
 
+Hace aproximadamente un año, el servidor activo fue repotenciado, aumentando su capacidad de memoria y
+procesamiento (10 procesadores físicos Xeon EPY C 73F3 y 128GB de memoria RAM). El proveedor del manejador
+de base de datos Oracle, ha sugerido que la configuración mínima de memoria RAM de este servidor sea de 512 GB
+(la máxima posible en ese servidor). Cada nuevo slot de 64GB cuesta aproximadamente 100 millones de pesos. Este
+servidor también puede ser actualizado con procesadores con más núcleos, con un costo aproximado de 10 millones
+de pesos por procesador. El costo anual de licenciamiento de Oracle por núcleo de procesador es de
+aproximadamente 10 millones de pesos.
+
+El servidor pasivo es menos poderoso que el activo y se estima que en caso de falla es poco probable que pueda
+asumir toda la carga del sistema
+
 \subsection{Principios tecnológicos}
 
 Dentro de los principios tecnológicos que se han definido en la empresa con respecto a la infraestructura están los
@@ -180,7 +191,7 @@ Fuera de esto, se va a asumir que:
 Estas reglas se pueden visualizar a partir del siguiente diagrama:
 \begin{center}
     \textbf{Modelo de aplicaciones AS-IS}
-    \includegraphics[scale=0.72]{as-is.jpg}    
+    \includegraphics[scale=0.56]{as-is.jpg}    
 \end{center}
 
 \section{Diseño de las soluciones.}
@@ -203,31 +214,43 @@ Hay 7 principales secciones que se evaluarán:
 \end{itemize}
 
 Para cada una de estas, se desarrollará una arquitectura diferente teniendo en cuenta sus requerimientos.
+Los requerimientos se van a clasificar como:
+\begin{itemize}
+    \item \textbf{Desempeño}
+    \item \textbf{Disponibilidad}
+    \item \textbf{Escalabilidad}
+    \item \textbf{Capacidad}
+\end{itemize}
 
 Para estos casos de uso, se establecen los siguientes requerimientos:
 
 \textbf{General:}
 \begin{itemize}
     \item En general todo se espera poder mantener en una misma granja de servidores, sin el uso de multinube.
-    \item 
+    \item Debe poder reutilizarse la tecnología existente, dado a que esto reduce costos
 \end{itemize} 
 
 \textbf{Afiliación:}
 \begin{itemize}
     \item \textbf{Desempeño}
-    \item \textbf{Disponibilidad}
-    \item \textbf{Escalabilidad}
-    \item \textbf{Capacidad}
     
     La carga de entrada/salida es muy intensiva, por lo que la solución debe poder 
+    hacer estas operaciones de forma satisfactoria.
+    
+    \item \textbf{Disponibilidad}
+    
+    Dado que la aplicación se usa de forma diaria, debe estar disponible de forma relativamente
+    constante.
 
+    \item \textbf{Escalabilidad}
+    
+    La carga es procesada en la noche, por lo que es perfectamente posible escalar
+    y desescalar en medida de que sea necesario. 
 
 \end{itemize}
 
 \textbf{Captación:}
 \begin{itemize}
-    \item \textbf{Desempeño}
-    \item \textbf{Disponibilidad}
     \item \textbf{Escalabilidad}
     
     Dado que este servicio solamente se utiliza a finales de mes, solamente es necesario mantener
@@ -246,21 +269,24 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
 \textbf{Analítica:}
 \begin{itemize}
     \item \textbf{Desempeño}
-    \item \textbf{Disponibilidad}
-    \item \textbf{Escalabilidad}
-    \item \textbf{Capacidad}
+
+    Finandes nos ha suministrado una copia de la consulta principal que resuelve la aplicación de Analítica y
+    espera su ayuda para determinar la infraestructura de TI necesaria para cumplir con un tiempo de respuesta de
+    este servicio menor o igual a 4 segundos por lo menos en el 95 \% de las veces
+    
+    Gran parte del trabajo hecho de parte de Analítica sera dado con respecto a esta. 
 \end{itemize}
 
 \textbf{Nómina:}
 \begin{itemize}
     \item \textbf{Desempeño}
-    \item \textbf{Disponibilidad}
-    \item \textbf{Escalabilidad}
     
+    La alta necesidad de operaciones de entrada y salida implican una necesidad de que las operaciones sean eficientes.  
 
     \item \textbf{Capacidad}
     
-
+    Se procesan 20.000 solicitudes en hora pico. Es la aplicación que requiere una mayor capacidad 
+    al ser utilizada.
 
 \end{itemize}
 
@@ -291,5 +317,34 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
     constante. Sin embargo, se asumirá para las pruebas la capacidad máxima
 
 \end{itemize}
+
+\subsection{Diseños individuales}
+
+\subsubsection{Analítica:}
+
+\subsubsection{Nómina:}
+
+\subsubsection{App y Web:}
+
+En este diseño, nos va a concerner no necesariamente el diseño interno de las apps de Finandes,
+sino su conexión con el resto de la infraestructura. Esto debido a que el diseño web y de las apps
+puede cambiar drasticamente entre sí (Swift no es lo mismo que Java, y Java no es lo mismo que Typescript.)
+y no le concierne a los temas de este curso. Lo que si nos concierne, sin embargo, es la conexión con el resto
+de la infraestructura.
+
+Vamos a entender la infraestructura bajo estas pretensiones:
+\begin{itemize}
+    \item podemos usar los servidores dentro de la infraestructura AS-IS
+    \item Se va a usar un failover dada la necesidad de disponibilidad para este servicio.
+    \item Aunque la encriptación hace las transacciones mas lentas, es un mal necesario dada la necesidad por seguridad dentro del negocio.
+\end{itemize}
+
+Se va a pensar entonces, dadas estas condiciones, de esta forma la infraestructura:
+
+\begin{center}
+    \textbf{Infraestructura de App y Web}
+    \includegraphics[scale=0.56]{webapp-diagram.jpg}    
+\end{center}
+
 %------------------------------------------------
 \end{document}
