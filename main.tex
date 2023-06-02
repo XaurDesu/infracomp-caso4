@@ -333,9 +333,56 @@ PD: Dado que esta aplicación procesa la información de forma batch, no hace fa
     \includegraphics[scale=0.5]{afiliacion.jpeg}
 \end{center}
 
+\subsubsection{Préstamos}
+
+Dado el hecho de que este es un servicio demandante en capacidad de cómputo, utilizaremos el 
+Servidor activo proveído, previamente repotenciado en la infraestructura existente con el fin de poder 
+procesar de forma eficiente las 4000 solicitudes. Vamos a tener al servidor pasivo conectado a este centro
+con el fin de procesar casos en el caso de una sobrecarga, que en general debería ser infrecuente para la mayoría
+de los casos pero sigue siendo una posibilidad en casos donde este servicio de procesamiento sea consumido por otras
+API. También dado a que no se da una hora especifica de uso, es muy posible que la carga este distribuida a lo largo
+del día, por lo que será generalmente raro tener 4000 solicitudes ocurriendo a la vez. Esta tomará de Input 
+información dada por HTTPS u otra red que nos de la información a ser procesada. Todas estas peticiones serán, de la misma
+forma que se puede ver como un tema común en las soluciones propuestas, tomado a partir de una API y  Transmitido a partir de un
+Broker al centro de procesamiento, donde dependiendo de la carga actual entrará al servidor activo o pasivo, el cual ayudará
+para evitar que se genere un crecimiento exponencial en el tiempo de respuesta. Todos los output irán inmediatamente a la base de datos
+de Finandes. En caso de una falla general del servidor activo se pasa la carga al servidor pasivo, esta no es una situación ideal 
+para el sistema, e implicaría las operaciones funcionando con un rendimiento limitado. Se espera evitar este escenario 
+lo más posible.
+
+\begin{center}
+    \textbf{Infraestructura de Préstamos}
+    \includegraphics[scale=0.6]{prestamos.jpg}
+\end{center}
 
 \subsubsection{Analítica:}
 
+Al observar los resultados obtenidos en las pruebas realizadas a la infraestructura actual, se puede afirmar que esta es sumamente desfavorable para alcanzar los objetivos propuestos, pues como se puede evidenciar en la gráfica, la fórmula que más se ajusta a la recta es y = 13,222x, lo que en otras palabras significa que por cada petición que se envíe a la aplicación, el tiempo de respuesta aumentará 13 segundos aproximadamente. Esto significa que ni siquiera con un único thread se alcanza el límite esperado de 4 segundos, y es un indicador claro de que la infraestructura está sumamente desactualizada, de manera que es de vital importancia realizar mejoras para garantizar que la aplicación cumpla con las necesidades actuales del negocio.
+Para determinar el tiempo que la máquina se tarda en manejar 2000 peticiones, podemos utilizar la fórmula de la regresión lineal, obteniendo como resultado
+\begin{center}
+    y=13,222(2000)=26,644 segundos=7,4 horas    
+\end{center}
+
+Siendo este un resultado completamente inaceptable para las tecnologías de la actualidad.
+Ahora, si se quiere calcular la cantidad de máquinas necesarias para que el tiempo sea de 4 segundos en total, se puede utilizar la siguiente formula:
+
+\begin{center}
+    4= 26,644/(cant maquinas)
+    
+    cant maquinas= 26,644/4 = 6661 maquinas        
+\end{center}
+
+Esto quiere decir que, si se tuviera que utilizar la infraestructura actual para manejar 2000 peticiones en menos de 4 segundos, resultaría necesario contar con mas del triple de consultas, siendo este otro indicador claro de que la arquitectura propuesta no cuenta con la capacidad necesaria para manejar esta cantidad de peticiones, y resulta necesario recurrir a tácticas o estrategias más recientes que permitan abordar esta necesidad. Como sugerencia principal, se recomienda fuertemente recurrir a un escalamiento vertical, porque las máquinas probadas tienen dificultades para procesar incluso una única petición, problema que se puede solucionar aumentando la capacidad de procesamiento y memoria RAM individual. No es recomendable recurrir a otras estrategias como failovers y balanceadores de carga porque, como se evidenció anteriormente, la cantidad de máquinas que sería necesario mantener para poder procesar volúmenes de información importantes es inviable.
+
+
+\begin{center}
+    \textbf{Regresión Lineal de número de threads vs tiempo}
+    \includegraphics[scale=0.5]{reg_lineal.jpeg}
+
+    \textbf{Tabla de número de threads vs tiempo.}
+
+    \includegraphics[scale=0.7]{tabla.jpeg}
+\end{center}
 \subsubsection{Captación}
 
 Teniendo en cuenta la cantidad de funcionalidades y la cantidad de peticiones que llega a recibir esta aplicación, se decidió recurrir a una arquitectura de microservicios, donde cada uno de ellos cuente con varios servidores para garantizar todos los requerimientos identificados. Para enviar las peticiones al microservicio correspondiente se hace uso de una API GATEWAY, que direcciona a la API adecuada (pese a que existe un costo de desempeño al realizar el redireccionamiento, para efectos de este caso resulta insignificante). El primer microservicio hace referencia a el manejo de los recursos disponibles, el segundo al registro de transacciones y el tercero al manejo de las captaciones y colocaciones de la entidad. De esta forma cada microservicio trabaja de forma independiente entre sí, y se puede realizar la conciliación entre las tres partes de forma mucho más efectiva, pues errores de un microservicio no afectan a otro, y eficiente, pues los 3 microservicios son independientes entre sí, por lo que pueden trabajar de forma paralela sin ningún tipo de inconveniente. Así mismo, cada microservicio cuenta con su respectiva base de datos, de forma que se distribuya la información según se necesita y se garantiza mayor disponibilidad de las BD al haber menos consultas sobre una sola. 
