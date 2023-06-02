@@ -15,6 +15,9 @@
 202014866\hfill\\
 j.torres16@uniandes.edu.co
 
+\textbf{Santiago Latorre} \hfill\\  
+202111851 \hfill\\  
+s.latorre@uniandes.edu.co
 
 \end{minipage}
 \begin{minipage}{0.4\textwidth} 
@@ -320,9 +323,35 @@ Para estos casos de uso, se establecen los siguientes requerimientos:
 
 \subsection{Diseños individuales}
 
+\subsection{Afiliación}
+Debido a que ya se contrato a un tercero que realiza todo el proceso de afiliación, y cuyo objetivo es enviar la información relacionada con este proceso, lo único que queda por evaluar es el procedimiento de recepción de información y guardado en base de datos. Teniendo en cuenta esto, se propone como solución una arquitectura monolítica que reciba la información, y la transforme de manera que se pueda almacenar en la base de datos sin que haya incompatibilidad en formatos o estructuras. Los principales beneficios de esta arquitectura es que, si la máquina tiene buenas especificaciones, el rendimiento de toda la API será optimo, además de que quita lugar a cualquier inconsistencia en la base de datos que podría ocurrir si hay múltiples servicios escribiendo en la base de datos de forma simultánea. Para garantizar que se cumpla el requerimiento de desempeño, se propone un escalamiento vertical del servidor utilizado para esta aplicación, pues aunque puede llegar a ser muy costoso, se trata de uno solo, que además solo necesita estar encendido en las noches, pues es en este tiempo en el que se realiza el proceso.
+
+PD: Dado que esta aplicación procesa la información de forma batch, no hace falta una aplicación web que despliegue el servicio.
+\begin{center}
+    \textbf{Infraestructura de Afiliación}
+
+    \includegraphics[scale=0.5]{afiliacion.jpeg}
+\end{center}
+
+
 \subsubsection{Analítica:}
 
+\subsubsection{Captación}
+
+Teniendo en cuenta la cantidad de funcionalidades y la cantidad de peticiones que llega a recibir esta aplicación, se decidió recurrir a una arquitectura de microservicios, donde cada uno de ellos cuente con varios servidores para garantizar todos los requerimientos identificados. Para enviar las peticiones al microservicio correspondiente se hace uso de una API GATEWAY, que direcciona a la API adecuada (pese a que existe un costo de desempeño al realizar el redireccionamiento, para efectos de este caso resulta insignificante). El primer microservicio hace referencia a el manejo de los recursos disponibles, el segundo al registro de transacciones y el tercero al manejo de las captaciones y colocaciones de la entidad. De esta forma cada microservicio trabaja de forma independiente entre sí, y se puede realizar la conciliación entre las tres partes de forma mucho más efectiva, pues errores de un microservicio no afectan a otro, y eficiente, pues los 3 microservicios son independientes entre sí, por lo que pueden trabajar de forma paralela sin ningún tipo de inconveniente. Así mismo, cada microservicio cuenta con su respectiva base de datos, de forma que se distribuya la información según se necesita y se garantiza mayor disponibilidad de las BD al haber menos consultas sobre una sola. 
+\begin{center}
+    \textbf{Infraestructura de Captación}
+    \includegraphics[scale=0.45]{captacion.jpeg}        
+\end{center}
+
 \subsubsection{Nómina:}
+Teniendo en cuenta que los principales requerimientos que esta sección busca cumplir son desempeño, escalabilidad y disponibilidad, se propone como táctica el uso de un balanceador de carga. De esta forma, las peticiones que lleguen a la aplicación de nómina podrán ser distribuidas entre los servidores activos, garantizando así un mejor desempeño y tiempo de respuesta por parte de la aplicación, además de garantizar que una falla no tenga repercusiones muy importantes en los tiempos y costos. Por otro lado, para garantizar que este escalamiento horizontal no resulte en costos desproporcionados que opaquen los beneficios de la solución, se propone utilizar el mecanismo de redundancia pasiva, de forma que los servidores adicionales no consuman energía mientras no sea necesario, y solo se activen cuando reciban el mensaje de que los servidores se encuentran sobrecargados. 
+
+Un beneficio adicional que ofrece esta táctica es la facilidad para agregar o eliminar servidores de la infraestructura. En otras palabras, si se ve durante las pruebas que no se está aprovechando los recursos adecuadamente, basta con desconectar la maquina del balanceador y reasignarle tareas que resulten de mayor consumo; así mismo, si queda en evidencia que se requieren más procesamiento para cumplir con los tiempos de respuesta definidos, es suficiente conectar una nueva máquina y replicar el contenido de las otras sobre ella, ya que todas cuentan con la misma información.
+\begin{center}
+    \textbf{Infraestructura de Nómina}
+    \includegraphics[scale=0.45]{nomina.jpeg}
+\end{center}
 
 \subsubsection{App y Web:}
 
